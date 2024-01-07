@@ -1,11 +1,13 @@
 from django.contrib.auth import get_user_model
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.decorators import action
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from .serializers import UserSerializer
+
+from m33_messaging.users.api.serializers import UserSerializer, RegistrationSerializer
 
 User = get_user_model()
 
@@ -23,3 +25,13 @@ class UserViewSet(RetrieveModelMixin, ListModelMixin, UpdateModelMixin, GenericV
     def me(self, request):
         serializer = UserSerializer(request.user, context={"request": request})
         return Response(status=status.HTTP_200_OK, data=serializer.data)
+
+class RegistrationView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = RegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+

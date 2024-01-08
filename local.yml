@@ -61,6 +61,8 @@ services:
   redis:
     image: redis:6
     container_name: m33_messaging_local_redis
+    ports:
+      - "6379:6379"
 
   celeryworker:
     <<: *django
